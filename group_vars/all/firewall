@@ -1,0 +1,12 @@
+firewall_rules:
+- ip_protocol: tcp
+  ports:
+  - '22'
+- ip_protocol: tcp
+  ports:
+  - '80'
+- ip_protocol: tcp
+  ports:
+  - '443'
+- ip_protocol: icmp
+

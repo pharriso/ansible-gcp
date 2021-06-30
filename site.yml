@@ -1,0 +1,58 @@
+---
+
+- hosts: localhost
+  gather_facts: false
+  tasks:
+  - name: create a network
+    google.cloud.gcp_compute_network:
+      name: "{{ gcp_network_name }}"
+      auto_create_subnetworks: 'true'
+      project: "{{ gcp_project }}"
+      state: present
+    register: network
+
+  - name: create firewall
+    google.cloud.gcp_compute_firewall:
+      name: ansible-demo-firewall
+      allowed: "{{ firewall_rules }}"
+      project: "{{ gcp_project }}"
+      network: "{{ network }}"
+      state: present
+
+  - name: create a disk
+    google.cloud.gcp_compute_disk:
+      name: "{{ gcp_vm_name }}-disk"
+      size_gb: "{{ gcp_vm_disk_size }}"
+      source_image: projects/rhel-cloud/global/images/rhel-8-v20210609
+      zone: "{{ gcp_zone }}"
+      project: "{{ gcp_project }}"
+      state: present
+    register: disk
+
+  - name: create a address
+    google.cloud.gcp_compute_address:
+      name: "{{ gcp_vm_name }}-ip"
+      region: "{{ gcp_region }}"
+      project: "{{ gcp_project }}"
+      state: present
+    register: address
+
+  - name: create a instance
+    google.cloud.gcp_compute_instance:
+      name: "{{ gcp_vm_name }}"
+      machine_type: "{{ gcp_vm_size }}"
+      disks:
+      - auto_delete: 'true'
+        boot: 'true'
+        source: "{{ disk }}"
+      labels:
+        environment: production
+      network_interfaces:
+      - network: "{{ network }}"
+        access_configs:
+        - name: External NAT
+          nat_ip: "{{ address }}"
+          type: ONE_TO_ONE_NAT
+      zone: "{{ gcp_zone }}"
+      project: "{{ gcp_project }}"
+      state: present

@@ -1,0 +1,4 @@
+gcp_project: ansible-demo-318315
+gcp_network_name: ansible-network
+gcp_region: europe-west2
+gcp_zone: europe-west2-a
