@@ -3,7 +3,7 @@
 - hosts: localhost
   gather_facts: false
   tasks:
-  - name: create a network
+  - name: create gcp compute network
     google.cloud.gcp_compute_network:
       name: "{{ gcp_network_name }}"
       auto_create_subnetworks: 'true'
@@ -11,7 +11,7 @@
       state: present
     register: network
 
-  - name: create firewall
+  - name: create gcp firewall
     google.cloud.gcp_compute_firewall:
       name: ansible-demo-firewall
       allowed: "{{ firewall_rules }}"
@@ -19,7 +19,7 @@
       network: "{{ network }}"
       state: present
 
-  - name: create a disk
+  - name: create virtual disk
     google.cloud.gcp_compute_disk:
       name: "{{ gcp_vm_name }}-disk"
       size_gb: "{{ gcp_vm_disk_size }}"
@@ -29,7 +29,7 @@
       state: present
     register: disk
 
-  - name: create a address
+  - name: create public ip address
     google.cloud.gcp_compute_address:
       name: "{{ gcp_vm_name }}-ip"
       region: "{{ gcp_region }}"
@@ -37,7 +37,7 @@
       state: present
     register: address
 
-  - name: create a instance
+  - name: create rhel instance
     google.cloud.gcp_compute_instance:
       name: "{{ gcp_vm_name }}"
       machine_type: "{{ gcp_vm_size }}"
