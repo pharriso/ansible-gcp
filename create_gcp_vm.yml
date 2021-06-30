@@ -56,3 +56,11 @@
       zone: "{{ gcp_zone }}"
       project: "{{ gcp_project }}"
       state: present
+
+  - name: wait for ssh to become available
+    wait_for:
+      host: "{{ address.address }}"
+      delay: 10
+      timeout: 1200
+      port: 22
+    delegate_to: localhost
